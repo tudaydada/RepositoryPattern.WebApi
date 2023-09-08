@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using DataAccess.EFCorre.Specifications;
+using Domain.Interfaces.Repositories;
 using System.Linq.Expressions;
 
 namespace DataAccess.EFCorre.Repositories
@@ -31,6 +32,11 @@ namespace DataAccess.EFCorre.Repositories
             return _context.Set<T>().Where(expression);
         }
 
+        public IEnumerable<T> FindWithSpecificationPattern(ISpecification<T> specification = null)
+        {
+            return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), specification);
+        }
+
         public IEnumerable<T> GetAll()
         {
             return _context.Set<T>().ToList();
@@ -50,5 +56,7 @@ namespace DataAccess.EFCorre.Repositories
         {
             _context.Set<T>().RemoveRange(entities);
         }
+
+
     }
 }

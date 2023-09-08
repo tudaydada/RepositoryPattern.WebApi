@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using DataAccess.EFCorre.Specifications;
+using Domain.Entities;
 using Domain.Interfaces.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +38,7 @@ namespace WebApi.Controllers
         public int Post([FromBody] Developer value)
         {
             _unitOfWork.Developers.Add(value);
-            var result =  _unitOfWork.Complete();
+            var result = _unitOfWork.Complete();
             return result;
         }
 
@@ -46,10 +47,10 @@ namespace WebApi.Controllers
         public int Put(int id, [FromBody] Developer value)
         {
             var isDev = _unitOfWork.Developers.Find(x => x.Id == id).Any();
-            if(isDev)
+            if (isDev)
             {
                 _unitOfWork.Developers.Edit(value);
-                var result =  _unitOfWork.Complete();
+                var result = _unitOfWork.Complete();
                 return result;
             }
             return 0;
@@ -59,14 +60,23 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public int Delete(int id)
         {
-            var dev =  _unitOfWork.Developers.Find(x => x.Id == id).FirstOrDefault();
-            if(dev != null)
+            var dev = _unitOfWork.Developers.Find(x => x.Id == id).FirstOrDefault();
+            if (dev != null)
             {
                 _unitOfWork.Developers.Remove(dev);
                 var result = _unitOfWork.Complete();
                 return result;
-            } 
+            }
             return 0;
+        }
+
+        [HttpGet("specify")]
+        public async Task<IActionResult> Specify(int followerNum)
+        {
+            var specification = new DeveloperWithAddressSpecification(followerNum);
+            //var specification = new DeveloperByIncomeSpecification();
+            var developers = _unitOfWork.Developers.FindWithSpecificationPattern(specification);
+            return Ok(developers);
         }
     }
 }

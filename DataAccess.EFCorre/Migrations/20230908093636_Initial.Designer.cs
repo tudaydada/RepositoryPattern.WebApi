@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.EFCorre.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230908064405_Initial")]
+    [Migration("20230908093636_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -39,7 +39,12 @@ namespace DataAccess.EFCorre.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Developers");
                 });
@@ -59,6 +64,17 @@ namespace DataAccess.EFCorre.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Developer", b =>
+                {
+                    b.HasOne("Domain.Entities.Project", "Projects")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
